@@ -1,19 +1,16 @@
 package com.openclassrooms.tourguide.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
+import com.openclassrooms.tourguide.user.User;
+import com.openclassrooms.tourguide.user.UserReward;
 import gpsUtil.GpsUtil;
 import gpsUtil.location.Attraction;
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
+import org.springframework.stereotype.Service;
 import rewardCentral.RewardCentral;
-import com.openclassrooms.tourguide.user.User;
-import com.openclassrooms.tourguide.user.UserReward;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class RewardsService {
@@ -41,6 +38,7 @@ public class RewardsService {
 
 
 	public void calculateRewards(User user) {
+
 		List<VisitedLocation> userLocations = user.getVisitedLocations();
 		List<Attraction> attractions = gpsUtil.getAttractions();
 
@@ -54,13 +52,16 @@ public class RewardsService {
 				}
 			}
 		}
+
 	}
 
+	//doublon avec User.addUserReward
 	public boolean shouldAddReward(User user, Attraction attraction) {
 		return user.getUserRewards().stream()
 				.noneMatch(r -> r.attraction.attractionName.equals(attraction.attractionName));
 	}
 
+	//Bouger le getReward après etre sur qu'on peut ajouter le UserReward
 	public void addReward(User user, VisitedLocation visitedLocation, Attraction attraction) {
 		user.addUserReward(new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user)));
 	}

@@ -45,7 +45,6 @@ public class TourGuideService {
 		
 		Locale.setDefault(Locale.US);
 
-		//TODO: bouger ceci dans un test ? endroit non approprié
 		if (testMode) {
 			logger.info("TestMode enabled");
 			logger.debug("Initializing users");
