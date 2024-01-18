@@ -1,6 +1,8 @@
 package com.openclassrooms.tourguide.service;
 
 import com.openclassrooms.tourguide.helper.InternalTestHelper;
+import com.openclassrooms.tourguide.mapper.NearAttractionMapper;
+import com.openclassrooms.tourguide.model.NearAttraction;
 import com.openclassrooms.tourguide.tracker.Tracker;
 import com.openclassrooms.tourguide.user.User;
 import com.openclassrooms.tourguide.user.UserReward;
@@ -20,6 +22,7 @@ import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gpsUtil.GpsUtil;
@@ -39,10 +42,13 @@ public class TourGuideService {
 	public final Tracker tracker;
 	boolean testMode = true;
 
-	public TourGuideService(GpsUtil gpsUtil, RewardsService rewardsService) {
+	private final NearAttractionMapper nearAttractionMapper;
+
+	public TourGuideService(GpsUtil gpsUtil, RewardsService rewardsService, NearAttractionMapper mapper) {
 		this.gpsUtil = gpsUtil;
 		this.rewardsService = rewardsService;
-		
+		this.nearAttractionMapper = mapper;
+
 		Locale.setDefault(Locale.US);
 
 		if (testMode) {
@@ -94,15 +100,18 @@ public class TourGuideService {
 		return visitedLocation;
 	}
 
-	public List<Attraction> getNearByAttractions(VisitedLocation visitedLocation) {
-		List<Attraction> nearbyAttractions = new ArrayList<>();
+	public List<NearAttraction> getNearByAttractions(VisitedLocation visitedLocation, User user) {
+		List<NearAttraction> attractionResult = new ArrayList<>();
 		for (Attraction attraction : gpsUtil.getAttractions()) {
 			if (rewardsService.isWithinAttractionProximity(attraction, visitedLocation.location)) {
-				nearbyAttractions.add(attraction);
+				NearAttraction nearAttraction =
+						nearAttractionMapper.attractionToNearAttraction(attraction, visitedLocation.location);
+				//TODO: calculer les rewardPoint
+				nearAttraction.setRewardPoint(rewardsService.getRewardPoints(attraction, user));
 			}
 		}
 
-		return nearbyAttractions;
+		return attractionResult;
 	}
 
 	private void addShutDownHook() {
