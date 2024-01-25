@@ -3,15 +3,17 @@ package com.openclassrooms.tourguide;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import com.openclassrooms.tourguide.mapper.NearAttractionMapper;
-import com.openclassrooms.tourguide.model.NearAttraction;
+import com.openclassrooms.tourguide.mapper.NearAttractionMapperImpl;
+import com.openclassrooms.tourguide.model.NearAttractionResult;
+import gpsUtil.location.Location;
 import org.junit.jupiter.api.Test;
 
 import gpsUtil.GpsUtil;
-import gpsUtil.location.Attraction;
 import gpsUtil.location.VisitedLocation;
 import rewardCentral.RewardCentral;
 import com.openclassrooms.tourguide.helper.InternalTestHelper;
@@ -22,7 +24,7 @@ import tripPricer.Provider;
 
 public class TestTourGuideService {
 
-	NearAttractionMapper nearAttractionMapper;
+	private NearAttractionMapper nearAttractionMapper;
 
 	@Test
 	public void getUserLocation() {
@@ -101,16 +103,18 @@ public class TestTourGuideService {
 		GpsUtil gpsUtil = new GpsUtil();
 		RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentral());
 		InternalTestHelper.setInternalUserNumber(0);
+		nearAttractionMapper = new NearAttractionMapperImpl();
 		TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService, nearAttractionMapper);
+		Location location = new Location(300, -200);
 
 		User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
-		VisitedLocation visitedLocation = tourGuideService.trackUserLocation(user);
+		VisitedLocation visitedLocation = new VisitedLocation(user.getUserId(), location, new Date());
 
-		List<NearAttraction> attractions = tourGuideService.getNearByAttractions(visitedLocation);
+		NearAttractionResult nearAttractionResult = tourGuideService.getNearByAttractions(visitedLocation, user);
 
 		tourGuideService.tracker.stopTracking();
 
-		assertEquals(5, attractions.size());
+		assertEquals(5, nearAttractionResult.getNearbyAttractionList().size());
 	}
 
 	public void getTripDeals() {
