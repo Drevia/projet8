@@ -1,20 +1,16 @@
 package com.openclassrooms.tourguide.service;
 
 import com.openclassrooms.tourguide.helper.InternalTestHelper;
+import com.openclassrooms.tourguide.mapper.NearAttractionMapper;
+import com.openclassrooms.tourguide.model.NearAttractionResult;
+import com.openclassrooms.tourguide.model.NearbyAttraction;
 import com.openclassrooms.tourguide.tracker.Tracker;
 import com.openclassrooms.tourguide.user.User;
 import com.openclassrooms.tourguide.user.UserReward;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,10 +35,13 @@ public class TourGuideService {
 	public final Tracker tracker;
 	boolean testMode = true;
 
-	public TourGuideService(GpsUtil gpsUtil, RewardsService rewardsService) {
+	private final NearAttractionMapper nearAttractionMapper;
+
+	public TourGuideService(GpsUtil gpsUtil, RewardsService rewardsService, NearAttractionMapper mapper) {
 		this.gpsUtil = gpsUtil;
 		this.rewardsService = rewardsService;
-		
+		this.nearAttractionMapper = mapper;
+
 		Locale.setDefault(Locale.US);
 
 		if (testMode) {
@@ -94,15 +93,31 @@ public class TourGuideService {
 		return visitedLocation;
 	}
 
-	public List<Attraction> getNearByAttractions(VisitedLocation visitedLocation) {
-		List<Attraction> nearbyAttractions = new ArrayList<>();
+	public NearAttractionResult getNearByAttractions(VisitedLocation visitedLocation, User user) {
+		NearAttractionResult nearAttractionResult = new NearAttractionResult();
+		List<NearbyAttraction> nearbyAttractionList = new ArrayList<>();
+
 		for (Attraction attraction : gpsUtil.getAttractions()) {
-			if (rewardsService.isWithinAttractionProximity(attraction, visitedLocation.location)) {
-				nearbyAttractions.add(attraction);
-			}
+
+			NearbyAttraction nearbyAttraction = nearAttractionMapper.attractionToNearbyAttraction(attraction, visitedLocation.location);
+
+			nearbyAttraction.setDistance(rewardsService.getDistance(attraction, visitedLocation.location));
+			nearbyAttraction.setRewardPoint(rewardsService.getRewardPoints(attraction, user));
+			nearbyAttractionList.add(nearbyAttraction);
 		}
 
-		return nearbyAttractions;
+		nearbyAttractionList = getFiveClosestAttraction(nearbyAttractionList);
+
+		nearAttractionResult.setUserLong(visitedLocation.location.longitude);
+		nearAttractionResult.setUserLat(visitedLocation.location.latitude);
+		nearAttractionResult.setNearbyAttractionList(nearbyAttractionList);
+
+		return nearAttractionResult;
+	}
+
+	private List<NearbyAttraction> getFiveClosestAttraction(List<NearbyAttraction> attractionsDistance) {
+		Collections.sort(attractionsDistance, Comparator.comparingDouble(NearbyAttraction::getDistance));
+		return attractionsDistance.subList(0, Math.min(5, attractionsDistance.size()));
 	}
 
 	private void addShutDownHook() {

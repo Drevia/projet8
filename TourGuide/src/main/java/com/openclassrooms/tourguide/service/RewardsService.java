@@ -56,13 +56,13 @@ public class RewardsService {
 	}
 
 	//doublon avec User.addUserReward
-	public boolean shouldAddReward(User user, Attraction attraction) {
+	private boolean shouldAddReward(User user, Attraction attraction) {
 		return user.getUserRewards().stream()
 				.noneMatch(r -> r.attraction.attractionName.equals(attraction.attractionName));
 	}
 
 	//Bouger le getReward après etre sur qu'on peut ajouter le UserReward
-	public void addReward(User user, VisitedLocation visitedLocation, Attraction attraction) {
+	private void addReward(User user, VisitedLocation visitedLocation, Attraction attraction) {
 		user.addUserReward(new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user)));
 	}
 
@@ -75,7 +75,7 @@ public class RewardsService {
 		return getDistance(attraction, visitedLocation.location) > proximityBuffer ? false : true;
 	}
 	
-	private int getRewardPoints(Attraction attraction, User user) {
+	public int getRewardPoints(Attraction attraction, User user) {
 		return rewardsCentral.getAttractionRewardPoints(attraction.attractionId, user.getUserId());
 	}
 	
