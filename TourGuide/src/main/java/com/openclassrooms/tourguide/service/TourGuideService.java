@@ -96,24 +96,14 @@ public class TourGuideService {
 	public NearAttractionResult getNearByAttractions(VisitedLocation visitedLocation, User user) {
 		NearAttractionResult nearAttractionResult = new NearAttractionResult();
 		List<NearbyAttraction> nearbyAttractionList = new ArrayList<>();
-		List<Double> attractionsDistance = new ArrayList<>();
 
 		for (Attraction attraction : gpsUtil.getAttractions()) {
-			attractionsDistance.add(rewardsService.getDistance(attraction, visitedLocation.location));
-			//TODO: revoir les données de test car les coordonnées de l'utilisateur est aléatoire
-			//note: si on skip la conditions (remplacer par un if(true) par exemple)
-			//// alors le resultat de sortie du test est bon (et les attraction bien triées)
-			if (rewardsService.isWithinAttractionProximity(attraction, visitedLocation.location)) {
 
-				NearbyAttraction nearbyAttraction = nearAttractionMapper.attractionToNearbyAttraction(attraction, visitedLocation.location);
+			NearbyAttraction nearbyAttraction = nearAttractionMapper.attractionToNearbyAttraction(attraction, visitedLocation.location);
 
-				//TODO: calculer les rewardPoint
-				// Appeler getDistance pour avoir une liste resultat de  la distance pour chaque attraction
-				// stream.sorted la liste pour avoir les 5 resultat les plus petits en debut de list
-				nearbyAttraction.setDistance(rewardsService.getDistance(attraction, visitedLocation.location));
-				nearbyAttraction.setRewardPoint(rewardsService.getRewardPoints(attraction, user));
-				nearbyAttractionList.add(nearbyAttraction);
-			}
+			nearbyAttraction.setDistance(rewardsService.getDistance(attraction, visitedLocation.location));
+			nearbyAttraction.setRewardPoint(rewardsService.getRewardPoints(attraction, user));
+			nearbyAttractionList.add(nearbyAttraction);
 		}
 
 		nearbyAttractionList = getFiveClosestAttraction(nearbyAttractionList);
