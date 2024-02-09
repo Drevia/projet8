@@ -40,7 +40,7 @@ public class TourGuideService {
 
 	private final NearAttractionMapper nearAttractionMapper;
 
-	private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+	private final ExecutorService executorService = Executors.newFixedThreadPool(20);
 
 	public TourGuideService(GpsUtil gpsUtil, RewardsService rewardsService, NearAttractionMapper mapper) {
 		this.gpsUtil = gpsUtil;

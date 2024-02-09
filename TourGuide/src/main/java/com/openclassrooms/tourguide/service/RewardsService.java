@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 @Service
 public class RewardsService {
 	private static final double STATUTE_MILES_PER_NAUTICAL_MILE = 1.15077945;
-	public static final int FIXED_THREAD_POOLS_SIZE = 20;
+	public static final int FIXED_THREAD_POOLS_SIZE = 10;
 
 	// proximity in miles
     private int defaultProximityBuffer = 10;
@@ -56,8 +56,6 @@ public class RewardsService {
 
 		List<VisitedLocation> userLocationsCopy = new ArrayList<>(userLocations);
 
-		long start = System.currentTimeMillis();
-
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
 
 		//TODO: refacto les boucle for
@@ -73,9 +71,6 @@ public class RewardsService {
 
 		//Attendre la complétion de tout les future
 		CompletableFuture<Void>[] futureArray = futures.toArray(new CompletableFuture[0]);
-
-		long end = System.currentTimeMillis();
-		logger.debug("temps total de l'operation: {} ms", end - start);
 
 		return CompletableFuture.allOf(futureArray);
 	}
@@ -111,10 +106,11 @@ public class RewardsService {
 	}
 	
 	public int getRewardPoints(Attraction attraction, User user) {
-		CompletableFuture<Integer> futureRewardPoints = CompletableFuture.supplyAsync(() ->
-		rewardsCentral.getAttractionRewardPoints(attraction.attractionId, user.getUserId()));
+		/*CompletableFuture<Integer> futureRewardPoints = CompletableFuture.supplyAsync(() ->
+		rewardsCentral.getAttractionRewardPoints(attraction.attractionId, user.getUserId()));*/
+		return rewardsCentral.getAttractionRewardPoints(attraction.attractionId, user.getUserId());
 
-		return futureRewardPoints.join();
+		/*return futureRewardPoints.join();*/
 	}
 	
 	public double getDistance(Location loc1, Location loc2) {

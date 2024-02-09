@@ -64,9 +64,9 @@ public class TestPerformance {
 
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
-		for (User user : allUsers) {
+/*		for (User user : allUsers) {
 			tourGuideService.trackUserLocation(user);
-		}
+		}*/
 		CompletableFuture<VisitedLocation>[] futures = allUsers.stream().map(u -> tourGuideService.trackUserLocation(u))
 				.collect(Collectors.toList()).toArray(new CompletableFuture[0]);
 		CompletableFuture.allOf(futures).join();
@@ -86,7 +86,7 @@ public class TestPerformance {
 
 		// Users should be incremented up to 100,000, and test finishes within 20
 		// minutes
-		InternalTestHelper.setInternalUserNumber(1000);
+		InternalTestHelper.setInternalUserNumber(10000);
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService, nearAttractionMapper);
