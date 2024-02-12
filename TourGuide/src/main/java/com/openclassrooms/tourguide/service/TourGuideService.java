@@ -40,7 +40,7 @@ public class TourGuideService {
 
 	private final NearAttractionMapper nearAttractionMapper;
 
-	private final ExecutorService executorService = Executors.newFixedThreadPool(20);
+	private final ExecutorService executorService = Executors.newFixedThreadPool(100);
 
 	public TourGuideService(GpsUtil gpsUtil, RewardsService rewardsService, NearAttractionMapper mapper) {
 		this.gpsUtil = gpsUtil;
@@ -92,11 +92,19 @@ public class TourGuideService {
 	}
 
 	public CompletableFuture<VisitedLocation> trackUserLocation(User user) {
-		CompletableFuture<VisitedLocation> futureLocation = CompletableFuture.supplyAsync(() ->
-				gpsUtil.getUserLocation(user.getUserId()), executorService);
-		/*VisitedLocation visitedLocation = gpsUtil.getUserLocation(user.getUserId());*/
-		user.addToVisitedLocations(futureLocation.join());
-		rewardsService.calculateRewards(user);
+
+		CompletableFuture<VisitedLocation> futureLocation = CompletableFuture.supplyAsync(() -> {
+					VisitedLocation visitedLocation = gpsUtil.getUserLocation(user.getUserId());
+					user.addToVisitedLocations(visitedLocation);
+					return visitedLocation;
+				}, executorService);
+
+		CompletableFuture.runAsync(() -> {
+			futureLocation.join() ;
+			rewardsService.calculateRewards(user);
+		}, executorService);
+
+		/*rewardsService.calculateRewards(user);*/
 		return futureLocation;
 	}
 
