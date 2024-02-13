@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -99,10 +100,16 @@ public class TourGuideService {
 					return visitedLocation;
 				}, executorService);
 
-		CompletableFuture.runAsync(() -> {
+		/*futureLocation.thenAcceptAsync(u -> rewardsService.calculateRewards(user)
+		, executorService);
+
+		futureLocation.thenCompose(visitedLocation -> CompletableFuture.supplyAsync(()
+				-> rewardsService.calculateRewards(user), executorService));*/
+
+		/*CompletableFuture.runAsync(() -> {
 			futureLocation.join() ;
 			rewardsService.calculateRewards(user);
-		}, executorService);
+		}, executorService);*/
 
 		/*rewardsService.calculateRewards(user);*/
 		return futureLocation;
