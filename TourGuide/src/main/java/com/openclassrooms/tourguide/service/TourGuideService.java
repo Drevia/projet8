@@ -41,7 +41,7 @@ public class TourGuideService {
 
 	private final NearAttractionMapper nearAttractionMapper;
 
-	private final ExecutorService executorService = Executors.newFixedThreadPool(100);
+	private final ExecutorService executorService = Executors.newFixedThreadPool(300);
 
 	public TourGuideService(GpsUtil gpsUtil, RewardsService rewardsService, NearAttractionMapper mapper) {
 		this.gpsUtil = gpsUtil;
@@ -100,18 +100,9 @@ public class TourGuideService {
 					return visitedLocation;
 				}, executorService);
 
-		/*futureLocation.thenAcceptAsync(u -> rewardsService.calculateRewards(user)
+		futureLocation.thenAcceptAsync(u -> rewardsService.calculateRewards(user)
 		, executorService);
 
-		futureLocation.thenCompose(visitedLocation -> CompletableFuture.supplyAsync(()
-				-> rewardsService.calculateRewards(user), executorService));*/
-
-		/*CompletableFuture.runAsync(() -> {
-			futureLocation.join() ;
-			rewardsService.calculateRewards(user);
-		}, executorService);*/
-
-		/*rewardsService.calculateRewards(user);*/
 		return futureLocation;
 	}
 
