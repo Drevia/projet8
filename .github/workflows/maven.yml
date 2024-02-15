@@ -28,11 +28,11 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: install gpsUtil
-      run: mvn install:install-file -Dfile=/libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
+      run: mvn install:install-file -Dfile=${GITHUB_WORKSPACE}/libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
     - name: install rewardCentral
-      run: mvn install:install-file -Dfile=/libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
+      run: mvn install:install-file -Dfile=${GITHUB_WORKSPACE}/libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
     - name: install tripPricer
-      run: mvn install:install-file -Dfile=/libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
+      run: mvn install:install-file -Dfile=${GITHUB_WORKSPACE}/libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
