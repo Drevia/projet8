@@ -14,17 +14,15 @@ import rewardCentral.RewardCentral;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 @Service
 public class RewardsService {
 	private static final double STATUTE_MILES_PER_NAUTICAL_MILE = 1.15077945;
-	public static final int FIXED_THREAD_POOLS_SIZE = 200;
+	public static final int FIXED_THREAD_POOLS_SIZE = 300;
 
 	// proximity in miles
-    private int defaultProximityBuffer = 10;
+    private int defaultProximityBuffer = 100;
 	private int proximityBuffer = defaultProximityBuffer;
 	private int attractionProximityRange = 200;
 	private final GpsUtil gpsUtil;
@@ -53,7 +51,6 @@ public class RewardsService {
 
 		List<VisitedLocation> userLocations = user.getVisitedLocations();
 		List<Attraction> attractions = getAttractions();
-
 		List<VisitedLocation> userLocationsCopy = new ArrayList<>(userLocations);
 
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -61,7 +58,7 @@ public class RewardsService {
 		//TODO: refacto les boucle for
 		for (VisitedLocation visitedLocation : userLocationsCopy) {
 			for (Attraction attraction : attractions) {
-				if (shouldAddReward(user, attraction) && nearAttraction(visitedLocation, attraction)) {
+				if (nearAttraction(visitedLocation, attraction)) {
 					CompletableFuture<Void> future = CompletableFuture.runAsync(() ->
 							addReward(user, visitedLocation, attraction), executorService);
 					futures.add(future);
@@ -82,12 +79,6 @@ public class RewardsService {
 		} else {
 			return attractionList;
 		}
-	}
-
-	//doublon avec User.addUserReward
-	private boolean shouldAddReward(User user, Attraction attraction) {
-		return user.getUserRewards().stream()
-				.noneMatch(r -> r.attraction.attractionName.equals(attraction.attractionName));
 	}
 
 	//Bouger le getReward après etre sur qu'on peut ajouter le UserReward

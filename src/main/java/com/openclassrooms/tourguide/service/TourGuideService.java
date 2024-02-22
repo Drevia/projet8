@@ -96,10 +96,10 @@ public class TourGuideService {
 					return visitedLocation;
 				}, executorService);
 
-		futureLocation.thenApplyAsync(u -> rewardsService.calculateRewards(user)
-		, executorService);
+		CompletableFuture<VisitedLocation> futureReward = futureLocation.thenComposeAsync((visitedLocation) ->
+						rewardsService.calculateRewards(user).thenApply((x) -> visitedLocation), executorService);
 
-		return futureLocation;
+		return futureReward;
 	}
 
 	public NearAttractionResult getNearByAttractions(VisitedLocation visitedLocation, User user) {

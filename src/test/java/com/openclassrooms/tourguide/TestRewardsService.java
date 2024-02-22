@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.openclassrooms.tourguide.mapper.NearAttractionMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -27,12 +28,11 @@ public class TestRewardsService {
 
 	NearAttractionMapper nearAttractionMapper;
 
-	//Test fonctionne en debug mais pas en lancement classique ?
 	@Test
-	@Disabled
 	public void userGetRewards() {
 		GpsUtil gpsUtil = new GpsUtil();
 		RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentral());
+		rewardsService.setProximityBuffer(Integer.MAX_VALUE);
 
 		InternalTestHelper.setInternalUserNumber(0);
 		TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService, nearAttractionMapper);
@@ -40,12 +40,11 @@ public class TestRewardsService {
 		User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
 		Attraction attraction = gpsUtil.getAttractions().get(0);
 		user.addToVisitedLocations(new VisitedLocation(user.getUserId(), attraction, new Date()));
-		VisitedLocation visitedLocation = tourGuideService.trackUserLocation(user).join();
-		System.out.println(visitedLocation.userId);
-		System.out.println(user.getUserId());
+		CompletableFuture<VisitedLocation> visitedLocation = tourGuideService.trackUserLocation(user);
+		CompletableFuture.allOf(visitedLocation).join();
 		List<UserReward> userRewards = user.getUserRewards();
 		tourGuideService.tracker.stopTracking();
-		assertTrue(userRewards.size() == 1);
+		assertTrue(userRewards.size() == 26);
 	}
 
 	@Test
