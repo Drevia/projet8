@@ -1,27 +1,26 @@
 package com.openclassrooms.tourguide;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.openclassrooms.tourguide.helper.InternalTestHelper;
+import com.openclassrooms.tourguide.mapper.NearAttractionMapper;
+import com.openclassrooms.tourguide.mapper.NearAttractionMapperImpl;
+import com.openclassrooms.tourguide.model.NearAttractionResult;
+import com.openclassrooms.tourguide.service.RewardsService;
+import com.openclassrooms.tourguide.service.TourGuideService;
+import com.openclassrooms.tourguide.user.User;
+import gpsUtil.GpsUtil;
+import gpsUtil.location.Location;
+import gpsUtil.location.VisitedLocation;
+import org.junit.jupiter.api.Test;
+import rewardCentral.RewardCentral;
+import tripPricer.Provider;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import com.openclassrooms.tourguide.mapper.NearAttractionMapper;
-import com.openclassrooms.tourguide.mapper.NearAttractionMapperImpl;
-import com.openclassrooms.tourguide.model.NearAttractionResult;
-import gpsUtil.location.Location;
-import org.junit.jupiter.api.Test;
-
-import gpsUtil.GpsUtil;
-import gpsUtil.location.VisitedLocation;
-import rewardCentral.RewardCentral;
-import com.openclassrooms.tourguide.helper.InternalTestHelper;
-import com.openclassrooms.tourguide.service.RewardsService;
-import com.openclassrooms.tourguide.service.TourGuideService;
-import com.openclassrooms.tourguide.user.User;
-import tripPricer.Provider;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestTourGuideService {
 

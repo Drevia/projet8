@@ -1,6 +1,5 @@
 package com.openclassrooms.tourguide.mapper;
 
-import com.openclassrooms.tourguide.model.NearAttractionResult;
 import com.openclassrooms.tourguide.model.NearbyAttraction;
 import gpsUtil.location.Attraction;
 import gpsUtil.location.Location;

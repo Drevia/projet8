@@ -1,6 +1,16 @@
 package com.openclassrooms.tourguide;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.openclassrooms.tourguide.helper.InternalTestHelper;
+import com.openclassrooms.tourguide.mapper.NearAttractionMapper;
+import com.openclassrooms.tourguide.service.RewardsService;
+import com.openclassrooms.tourguide.service.TourGuideService;
+import com.openclassrooms.tourguide.user.User;
+import gpsUtil.GpsUtil;
+import gpsUtil.location.Attraction;
+import gpsUtil.location.VisitedLocation;
+import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.Test;
+import rewardCentral.RewardCentral;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,19 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.openclassrooms.tourguide.mapper.NearAttractionMapper;
-import org.apache.commons.lang3.time.StopWatch;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-import gpsUtil.GpsUtil;
-import gpsUtil.location.Attraction;
-import gpsUtil.location.VisitedLocation;
-import rewardCentral.RewardCentral;
-import com.openclassrooms.tourguide.helper.InternalTestHelper;
-import com.openclassrooms.tourguide.service.RewardsService;
-import com.openclassrooms.tourguide.service.TourGuideService;
-import com.openclassrooms.tourguide.user.User;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestPerformance {
 
@@ -56,7 +54,7 @@ public class TestPerformance {
 		RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentral());
 		// Users should be incremented up to 100,000, and test finishes within 15
 		// minutes
-		InternalTestHelper.setInternalUserNumber(10000);
+		InternalTestHelper.setInternalUserNumber(100000);
 		TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService, nearAttractionMapper );
 
 		List<User> allUsers = new ArrayList<>();
